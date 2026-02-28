@@ -1,0 +1,139 @@
+{% extends 'users/new-ui/user_base.html' %}
+{% load static %}
+
+{% block content %}
+{{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+  gaClientIdTrackingIframe('users.signup.view');
+  setTimeout(() => {
+    const cynaps_gaclient_id = sessionStorage.getItem('cynaps_gaclient_id');
+    if (window.__lsa) __lsa('users.signup.view', { cynaps_gaclient_id });
+  }, 2000);
+
+  // CSRF Token Refresh: When user returns to this tab after email verification,
+  // the session may have changed, making the original CSRF token invalid.
+  // This refreshes the token when the page becomes visible again.
+  (function() {
+    let lastVisibilityState = document.visibilityState;
+    
+    document.addEventListener('visibilitychange', function() {
+      // Only refresh when page becomes visible (user returns to tab)
+      if (document.visibilityState === 'visible' && lastVisibilityState === 'hidden') {
+        fetch('{% url "csrf-token-refresh" %}', {
+          method: 'GET',
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.csrfToken) {
+            // Update all CSRF token inputs in forms on this page
+            const csrfInputs = document.querySelectorAll('input[name="csrfmiddlewaretoken"]');
+            csrfInputs.forEach(input => {
+              input.value = data.csrfToken;
+            });
+          }
+        })
+        .catch(error => {
+          console.warn('CSRF token refresh failed:', error);
+        });
+      }
+      lastVisibilityState = document.visibilityState;
+    });
+
+    // Also refresh on page focus (backup for browsers with poor visibilitychange support)
+    window.addEventListener('focus', function() {
+      fetch('{% url "csrf-token-refresh" %}', {
+        method: 'GET',
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.csrfToken) {
+          const csrfInputs = document.querySelectorAll('input[name="csrfmiddlewaretoken"]');
+          csrfInputs.forEach(input => {
+            input.value = data.csrfToken;
+          });
+        }
+      })
+      .catch(() => {}); // Silently fail on focus refresh
+    });
+  })();
+</script>
+{% endblock %}
+
+{% block user_content %}
+<div class="auth-form-container">
+  <!-- Section Label - matching FeaturesSection number style -->
+  <div class="auth-section-label">
+    <span>01/</span>
+  </div>
+  
+  <h2>Get started</h2>
+  <p class="subtitle">Create your account to start building with Cynaps.</p>
+  
+  <form class="auth-form" action="{% url 'user-signup' %}?next={{ next }}{% if token %}&token={{ token }}{% endif %}" method="post">
+    {% csrf_token %}
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" value="{{ user_form.data.email }}" placeholder="you@example.com" required autocomplete="email">
+      {% if user_form.errors.email %}
+        <ul class="field-errors">
+          {% for error in user_form.errors.email %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    <div class="form-field">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Create a strong password" required autocomplete="new-password">
+      {% if user_form.errors.password %}
+        <ul class="field-errors">
+          {% for error in user_form.errors.password %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    <div class="form-field">
+      <label for="user_role">Role</label>
+      <select name="user_role" id="user_role" required>
+        <option value="" disabled selected>Select your role</option>
+        <option value="client">Client — Create & manage projects</option>
+        <option value="annotator">Annotator — Label data & earn</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label for="how_find_us">How did you find us?</label>
+      <select name="how_find_us" id="how_find_us">
+        <option disabled value="" {% if not form.data.how_find_us %}selected{% endif %}>Select an option</option>
+        {% for choice in found_us_options %}
+          <option value="{{ choice.1 }}" {% if choice.1 == user_form.data.how_find_us %}selected{% endif %}>{{ choice.1 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-field" id="elaborateContainer" {% if user_form.data.how_find_us != elaborate %}style="display:none;"{% endif %}>
+      <label for="elaborate">Details</label>
+      <input name="elaborate" id="elaborate" {% if user_form.data.how_find_us == elaborate %}value="{{ user_form.data.elaborate }}"{% endif %} placeholder="Tell us more...">
+    </div>
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <p class="error-message">{{ error }}</p>
+      {% endfor %}
+    {% endif %}
+    <button type="submit" class="auth-submit-btn btn-purple">
+      CREATE ACCOUNT
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"></path>
+        <path d="m12 5 7 7-7 7"></path>
+      </svg>
+    </button>
+  </form>
+  
+  <p class="auth-bottom-link">Already have an account? <a href="{% url 'user-login' %}{% querystring %}">Log in</a></p>
+  
+</div>
+
+<script nonce="{{request.csp_nonce}}">
+  document.querySelector("#how_find_us").addEventListener('change', function(e) {
+    const isOther = e.target.value == '{{ elaborate }}';
+    document.querySelector("#elaborateContainer").style.display = isOther ? 'block' : 'none';
+  });
+</script>
+{% endblock %}

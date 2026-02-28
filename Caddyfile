@@ -1,0 +1,11 @@
+:80 {
+   reverse_proxy cynaps-platform:8080
+}
+
+cynaps.xyz {
+    reverse_proxy cynaps-platform:8080
+}
+
+www.cynaps.xyz {
+    reverse_proxy cynaps-platform:8080
+}

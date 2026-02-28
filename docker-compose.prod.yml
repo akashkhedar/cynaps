@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: cynaps-platform
+    restart: always
+    expose:
+      - "8080"
+    env_file:
+      - production.env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "python cynaps/manage.py migrate &&
+             python cynaps/manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8080 --workers 2 --timeout 120 cynaps.core.wsgi:application"
+
+  db:
+    image: postgres:15-alpine
+    container_name: cynaps-db
+    restart: always
+    volumes:
+      - cynaps_db_data:/var/lib/postgresql/data
+    env_file:
+      - production.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cynaps"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cynaps-redis
+    restart: always
+    volumes:
+      - cynaps_redis_data:/data
+
+  minio:
+    image: minio/minio
+    container_name: cynaps-minio
+    restart: always
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - cynaps_minio_data:/data
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: cynaps-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+  # RQ worker for background task processing
+  rq-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: cynaps-rq-worker
+    restart: always
+    env_file:
+      - production.env
+    depends_on:
+      - db
+      - redis
+    command: python cynaps/manage.py rqworker default high low
+
+  # Scheduler for periodic tasks (runs every hour)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: cynaps-scheduler
+    restart: always
+    env_file:
+      - production.env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "while true; do
+        echo '[Scheduler] Running timeout processing...' &&
+        python cynaps/manage.py process_assignment_timeouts &&
+        echo '[Scheduler] Sleeping for 1 hour...' &&
+        sleep 3600;
+      done"
+
+volumes:
+  cynaps_db_data:
+  cynaps_redis_data:
+  cynaps_minio_data:
+  caddy_data:
+  caddy_config:

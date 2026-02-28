@@ -1,0 +1,71 @@
+.storage-settings {
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  &__empty {
+    height: 100px;
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #6b7280;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed #22262dff;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  &__submit {
+    display: flex;
+    margin-top: 32px;
+    align-items: center;
+    justify-content: space-between;
+
+    &+.inline-error {
+      margin-top: 32px;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    color: #f87171;
+    font-size: 14px;
+    line-height: 22px;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+
+    &_valid {
+      color: #9ca3af;
+    }
+  }
+
+  &__sync {
+    display: flex;
+    margin-top: 16px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__sync-count {
+    margin-top: 14px;
+    line-height: 18px;
+    font-size: 14px;
+    color: #6b7280;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  &__summary {
+    .dl__dd {
+      min-width: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+  }
+}

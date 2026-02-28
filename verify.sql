@@ -1,0 +1,1 @@
+SELECT 'Categories' as type, count(*) FROM expertise_category UNION ALL SELECT 'Specializations', count(*) FROM expertise_specialization UNION ALL SELECT 'Plans', count(*) FROM billing_subscription_plan UNION ALL SELECT 'Packages', count(*) FROM billing_credit_package

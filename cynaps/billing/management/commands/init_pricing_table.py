@@ -1,0 +1,1041 @@
+"""
+Management command to initialize annotation pricing based on the master pricing table
+"""
+from django.core.management.base import BaseCommand
+from billing.models import AnnotationPricing
+
+
+class Command(BaseCommand):
+    help = 'Initialize annotation pricing rules based on master pricing table'
+    
+    def handle(self, *args, **options):
+        self.stdout.write('Creating annotation pricing rules...')
+        
+        pricing_data = [
+            # 2D Images
+            {
+                'data_type': '2d_image',
+                'modality': 'X-ray (Chest)',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+                'bounding_box_credit': 5,
+                'segmentation_credit': 10,
+                'keypoint_credit': 8,
+                'polygon_credit': 12,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'X-ray (Extremity)',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+                'bounding_box_credit': 4,
+                'segmentation_credit': 8,
+                'keypoint_credit': 6,
+                'polygon_credit': 10,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Mammography',
+                'base_credit': 2,
+                'unit_description': 'per image',
+                'classification_credit': 2,
+                'bounding_box_credit': 8,
+                'segmentation_credit': 15,
+                'keypoint_credit': 10,
+                'polygon_credit': 18,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Retinal Scan',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+                'bounding_box_credit': 6,
+                'segmentation_credit': 12,
+                'keypoint_credit': 10,
+                'polygon_credit': 15,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Skin/Dermoscopy',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+                'bounding_box_credit': 5,
+                'segmentation_credit': 10,
+                'keypoint_credit': 8,
+                'polygon_credit': 12,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Pathology Slide',
+                'base_credit': 3,
+                'unit_description': 'per image',
+                'classification_credit': 3,
+                'bounding_box_credit': 12,
+                'segmentation_credit': 25,
+                'keypoint_credit': 15,
+                'polygon_credit': 30,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Ultrasound (Single)',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+                'bounding_box_credit': 6,
+                'segmentation_credit': 12,
+                'keypoint_credit': 10,
+                'polygon_credit': 15,
+            },
+            
+            # Computer Vision (General - Non-Medical)
+            {
+                'data_type': '2d_image',
+                'modality': 'Semantic Segmentation (Polygons)',
+                'base_credit': 15,
+                'unit_description': 'per image',
+                'polygon_credit': 15,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Semantic Segmentation (Masks)',
+                'base_credit': 20,
+                'unit_description': 'per image',
+                'segmentation_credit': 20,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Object Detection (Bounding Boxes)',
+                'base_credit': 5,
+                'unit_description': 'per image',
+                'bounding_box_credit': 5,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Object Detection (Ellipses)',
+                'base_credit': 6,
+                'unit_description': 'per image',
+                'bounding_box_credit': 6,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Keypoint Labeling',
+                'base_credit': 8,
+                'unit_description': 'per image',
+                'keypoint_credit': 8,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Image Classification',
+                'base_credit': 1,
+                'unit_description': 'per image',
+                'classification_credit': 1,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Multi-Class Classification',
+                'base_credit': 2,
+                'unit_description': 'per comparison',
+                'classification_credit': 2,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Image Captioning',
+                'base_credit': 3,
+                'unit_description': 'per image',
+                'classification_credit': 3,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Visual Question Answering (VQA)',
+                'base_credit': 5,
+                'unit_description': 'per question',
+                'classification_credit': 5,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Optical Character Recognition (OCR)',
+                'base_credit': 4,
+                'unit_description': 'per page',
+                'classification_credit': 4,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Multi-page Document Annotation',
+                'base_credit': 2,
+                'unit_description': 'per page',
+                'classification_credit': 2,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Inventory Tracking',
+                'base_credit': 8,
+                'unit_description': 'per image',
+                'segmentation_credit': 8,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Text-to-Image Generation',
+                'base_credit': 3,
+                'unit_description': 'per evaluation',
+                'classification_credit': 3,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Visual Genome',
+                'base_credit': 25,
+                'unit_description': 'per image',
+                'classification_credit': 25,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Search Engine Result Relevance',
+                'base_credit': 0.3,
+                'unit_description': 'per result',
+                'classification_credit': 0.3,
+            },
+            
+            # 3D Volumes
+            {
+                'data_type': '3d_volume',
+                'modality': 'CT Scan',
+                'base_credit': 2,
+                'unit_description': 'per slice',
+                'classification_credit': 2,
+                'bounding_box_credit': 10,
+                'segmentation_credit': 20,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'MRI',
+                'base_credit': 3,
+                'unit_description': 'per slice',
+                'classification_credit': 3,
+                'bounding_box_credit': 12,
+                'segmentation_credit': 25,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'PET-CT',
+                'base_credit': 4,
+                'unit_description': 'per slice',
+                'classification_credit': 4,
+                'bounding_box_credit': 15,
+                'segmentation_credit': 30,
+            },
+            
+            # DICOM Medical Imaging (Specialized Premium)
+            {
+                'data_type': '2d_image',
+                'modality': 'DICOM Classification (X-ray)',
+                'base_credit': 6.0,
+                'unit_description': 'per image',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Classification (CT Scan)',
+                'base_credit': 11.0,
+                'unit_description': 'per volume',
+                'classification_credit': 11.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Classification (MRI)',
+                'base_credit': 13.2,
+                'unit_description': 'per volume',
+                'classification_credit': 13.2,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'DICOM Bounding Box (X-ray)',
+                'base_credit': 20.0,
+                'unit_description': 'per image',
+                'bounding_box_credit': 20.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Bounding Box (CT Scan)',
+                'base_credit': 33.0,
+                'unit_description': 'per volume',
+                'bounding_box_credit': 33.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Bounding Box (MRI)',
+                'base_credit': 39.6,
+                'unit_description': 'per volume',
+                'bounding_box_credit': 39.6,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'DICOM Segmentation (X-ray)',
+                'base_credit': 48.0,
+                'unit_description': 'per image',
+                'segmentation_credit': 48.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Segmentation (CT Scan)',
+                'base_credit': 66.0,
+                'unit_description': 'per volume',
+                'segmentation_credit': 66.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Segmentation (MRI)',
+                'base_credit': 79.2,
+                'unit_description': 'per volume',
+                'segmentation_credit': 79.2,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'DICOM Keypoint Labeling (X-ray)',
+                'base_credit': 32.0,
+                'unit_description': 'per image',
+                'keypoint_credit': 32.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Keypoint Labeling (CT Scan)',
+                'base_credit': 44.0,
+                'unit_description': 'per volume',
+                'keypoint_credit': 44.0,
+            },
+            {
+                'data_type': '3d_volume',
+                'modality': 'DICOM Keypoint Labeling (MRI)',
+                'base_credit': 52.8,
+                'unit_description': 'per volume',
+                'keypoint_credit': 52.8,
+            },
+            
+            # Time Series
+            {
+                'data_type': 'time_series',
+                'modality': 'ECG',
+                'base_credit': 3,
+                'unit_description': 'per 10-sec',
+                'classification_credit': 3,
+                'keypoint_credit': 5,
+                'time_sequence_credit': 8,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'EEG',
+                'base_credit': 4,
+                'unit_description': 'per 10-sec',
+                'classification_credit': 4,
+                'keypoint_credit': 6,
+                'time_sequence_credit': 10,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'EMG',
+                'base_credit': 2,
+                'unit_description': 'per 10-sec',
+                'classification_credit': 2,
+                'keypoint_credit': 4,
+                'time_sequence_credit': 6,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'ICU Monitor Data',
+                'base_credit': 5,
+                'unit_description': 'per 10-sec',
+                'classification_credit': 5,
+                'keypoint_credit': 8,
+                'time_sequence_credit': 12,
+            },
+            
+            # Time Series Analysis (General)
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Forecasting',
+                'base_credit': 5.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 5.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Change Point Detection',
+                'base_credit': 8.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 8.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Activity Recognition',
+                'base_credit': 6.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Signal Quality',
+                'base_credit': 3.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 3.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Outlier & Anomaly Detection',
+                'base_credit': 7.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 7.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Classification',
+                'base_credit': 4.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 4.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Labeling',
+                'base_credit': 10.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 10.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series + Audio + Video Sync',
+                'base_credit': 15.0,
+                'unit_description': 'per minute',
+                'classification_credit': 15.0,
+            },
+            
+            # Time Series Analysis (Medical Premium)
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Forecasting (Medical)',
+                'base_credit': 15.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 15.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Change Point Detection (Medical)',
+                'base_credit': 24.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 24.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Activity Recognition (Medical)',
+                'base_credit': 18.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 18.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Signal Quality (Medical)',
+                'base_credit': 9.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 9.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Outlier & Anomaly Detection (Medical)',
+                'base_credit': 21.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 21.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Classification (Medical)',
+                'base_credit': 12.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 12.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series Labeling (Medical)',
+                'base_credit': 30.0,
+                'unit_description': 'per 1000 points',
+                'classification_credit': 30.0,
+            },
+            {
+                'data_type': 'time_series',
+                'modality': 'Time Series + Audio + Video Sync (Medical)',
+                'base_credit': 45.0,
+                'unit_description': 'per minute',
+                'classification_credit': 45.0,
+            },
+            
+            # Video
+            {
+                'data_type': 'video',
+                'modality': 'Endoscopy',
+                'base_credit': 20,
+                'unit_description': 'per minute',
+                'classification_credit': 20,
+                'bounding_box_credit': 40,
+                'segmentation_credit': 80,
+                'keypoint_credit': 60,
+                'polygon_credit': 100,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Ultrasound Video',
+                'base_credit': 15,
+                'unit_description': 'per minute',
+                'classification_credit': 15,
+                'bounding_box_credit': 30,
+                'segmentation_credit': 60,
+                'keypoint_credit': 45,
+                'polygon_credit': 75,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Surgical Recording',
+                'base_credit': 25,
+                'unit_description': 'per minute',
+                'classification_credit': 25,
+                'bounding_box_credit': 50,
+                'segmentation_credit': 100,
+                'keypoint_credit': 75,
+                'polygon_credit': 125,
+            },
+            
+            # Video Templates (General)
+            {
+                'data_type': 'video',
+                'modality': 'Video Classification',
+                'base_credit': 10.0,
+                'unit_description': 'per minute',
+                'classification_credit': 10.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Object Detection',
+                'base_credit': 20.0,
+                'unit_description': 'per minute',
+                'bounding_box_credit': 20.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Timeline Segmentation',
+                'base_credit': 15.0,
+                'unit_description': 'per minute',
+                'segmentation_credit': 15.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Frame Classification',
+                'base_credit': 2.0,
+                'unit_description': 'per frame',
+                'classification_credit': 2.0,
+            },
+            
+            # Video Templates (Medical Premium)
+            {
+                'data_type': 'video',
+                'modality': 'Video Classification (Medical)',
+                'base_credit': 20.0,
+                'unit_description': 'per minute',
+                'classification_credit': 20.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Object Detection (Medical)',
+                'base_credit': 40.0,
+                'unit_description': 'per minute',
+                'bounding_box_credit': 40.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Timeline Segmentation (Medical)',
+                'base_credit': 30.0,
+                'unit_description': 'per minute',
+                'segmentation_credit': 30.0,
+            },
+            {
+                'data_type': 'video',
+                'modality': 'Video Frame Classification (Medical)',
+                'base_credit': 4.0,
+                'unit_description': 'per frame',
+                'classification_credit': 4.0,
+            },
+            
+            # 3D Annotations
+            {
+                'data_type': '3d_annotation',
+                'modality': '3D Bounding Box',
+                'base_credit': 0,
+                'unit_description': 'per annotation',
+                'bounding_box_credit': 50,
+            },
+            {
+                'data_type': '3d_annotation',
+                'modality': '3D Segmentation',
+                'base_credit': 0,
+                'unit_description': 'per annotation',
+                'segmentation_credit': 100,
+            },
+            {
+                'data_type': '3d_annotation',
+                'modality': '3D Mesh',
+                'base_credit': 0,
+                'unit_description': 'per annotation',
+                'polygon_credit': 150,
+            },
+            
+            # Signal Data
+            {
+                'data_type': 'signal_data',
+                'modality': 'Audio (Stethoscope)',
+                'base_credit': 2,
+                'unit_description': 'per minute',
+                'classification_credit': 2,
+                'time_sequence_credit': 5,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Respiratory Signals',
+                'base_credit': 3,
+                'unit_description': 'per minute',
+                'classification_credit': 3,
+                'time_sequence_credit': 8,
+            },
+            
+            # Audio/Speech Processing (General)
+            {
+                'data_type': 'signal_data',
+                'modality': 'Automatic Speech Recognition',
+                'base_credit': 5.0,
+                'unit_description': 'per minute',
+                'classification_credit': 5.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Sound Event Detection',
+                'base_credit': 8.0,
+                'unit_description': 'per minute',
+                'classification_credit': 8.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Speaker Segmentation',
+                'base_credit': 6.0,
+                'unit_description': 'per minute',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Signal Quality Detection',
+                'base_credit': 2.0,
+                'unit_description': 'per minute',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Dialogue Analysis',
+                'base_credit': 10.0,
+                'unit_description': 'per minute',
+                'classification_credit': 10.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Intent Classification',
+                'base_credit': 4.0,
+                'unit_description': 'per minute',
+                'classification_credit': 4.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Audio Classification',
+                'base_credit': 2.0,
+                'unit_description': 'per minute',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Audio Classification (Segmented)',
+                'base_credit': 3.0,
+                'unit_description': 'per minute',
+                'classification_credit': 3.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Voice Activity Detection',
+                'base_credit': 2.0,
+                'unit_description': 'per minute',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Contextual Scrolling',
+                'base_credit': 5.0,
+                'unit_description': 'per minute',
+                'classification_credit': 5.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'ASR Hypotheses',
+                'base_credit': 3.0,
+                'unit_description': 'per minute',
+                'classification_credit': 3.0,
+            },
+            
+            # Audio/Speech Processing (Medical Premium)
+            {
+                'data_type': 'signal_data',
+                'modality': 'Automatic Speech Recognition (Medical)',
+                'base_credit': 15.0,
+                'unit_description': 'per minute',
+                'classification_credit': 15.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Sound Event Detection (Medical)',
+                'base_credit': 24.0,
+                'unit_description': 'per minute',
+                'classification_credit': 24.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Speaker Segmentation (Medical)',
+                'base_credit': 18.0,
+                'unit_description': 'per minute',
+                'classification_credit': 18.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Signal Quality Detection (Medical)',
+                'base_credit': 6.0,
+                'unit_description': 'per minute',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Dialogue Analysis (Medical)',
+                'base_credit': 30.0,
+                'unit_description': 'per minute',
+                'classification_credit': 30.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Intent Classification (Medical)',
+                'base_credit': 12.0,
+                'unit_description': 'per minute',
+                'classification_credit': 12.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Audio Classification (Medical)',
+                'base_credit': 6.0,
+                'unit_description': 'per minute',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Audio Classification (Segmented) (Medical)',
+                'base_credit': 9.0,
+                'unit_description': 'per minute',
+                'classification_credit': 9.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Voice Activity Detection (Medical)',
+                'base_credit': 6.0,
+                'unit_description': 'per minute',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'Contextual Scrolling (Medical)',
+                'base_credit': 15.0,
+                'unit_description': 'per minute',
+                'classification_credit': 15.0,
+            },
+            {
+                'data_type': 'signal_data',
+                'modality': 'ASR Hypotheses (Medical)',
+                'base_credit': 9.0,
+                'unit_description': 'per minute',
+                'classification_credit': 9.0,
+            },
+            
+            # Documents
+            {
+                'data_type': 'document',
+                'modality': 'Medical Report',
+                'base_credit': 0.5,
+                'unit_description': 'per page',
+                'classification_credit': 0.5,
+                'bounding_box_credit': 2,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Freeform Metadata',
+                'base_credit': 0.5,
+                'unit_description': 'per task',
+                'classification_credit': 0.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'PDF Classification',
+                'base_credit': 1.0,
+                'unit_description': 'per document',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Tabular Data',
+                'base_credit': 2.0,
+                'unit_description': 'per table',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'HTML Entity Recognition',
+                'base_credit': 1.5,
+                'unit_description': 'per page',
+                'classification_credit': 1.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'HTML Classification',
+                'base_credit': 0.8,
+                'unit_description': 'per page',
+                'classification_credit': 0.8,
+            },
+            
+            # Natural Language Processing (General)
+            {
+                'data_type': 'document',
+                'modality': 'Question Answering',
+                'base_credit': 2.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Text Classification',
+                'base_credit': 0.5,
+                'unit_description': 'per document',
+                'classification_credit': 0.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Named Entity Recognition',
+                'base_credit': 1.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Taxonomy',
+                'base_credit': 1.5,
+                'unit_description': 'per document',
+                'classification_credit': 1.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Relation Extraction',
+                'base_credit': 2.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Text Summarization',
+                'base_credit': 3.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 3.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Machine Translation',
+                'base_credit': 1.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Content Moderation',
+                'base_credit': 0.3,
+                'unit_description': 'per document',
+                'classification_credit': 0.3,
+            },
+            
+            # Natural Language Processing (Medical Premium)
+            {
+                'data_type': 'document',
+                'modality': 'Question Answering (Medical)',
+                'base_credit': 6.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Text Classification (Medical)',
+                'base_credit': 1.5,
+                'unit_description': 'per document',
+                'classification_credit': 1.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Named Entity Recognition (Medical)',
+                'base_credit': 3.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 3.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Taxonomy (Medical)',
+                'base_credit': 4.5,
+                'unit_description': 'per document',
+                'classification_credit': 4.5,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Relation Extraction (Medical)',
+                'base_credit': 6.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 6.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Text Summarization (Medical)',
+                'base_credit': 9.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 9.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Machine Translation (Medical)',
+                'base_credit': 3.0,
+                'unit_description': 'per 100 words',
+                'classification_credit': 3.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Content Moderation (Medical)',
+                'base_credit': 0.9,
+                'unit_description': 'per document',
+                'classification_credit': 0.9,
+            },
+            
+            # Ranking & Scoring (General)
+            {
+                'data_type': '2d_image',
+                'modality': 'Pairwise Regression',
+                'base_credit': 1.0,
+                'unit_description': 'per comparison',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Pairwise Classification',
+                'base_credit': 0.8,
+                'unit_description': 'per comparison',
+                'classification_credit': 0.8,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Document Retrieval',
+                'base_credit': 0.5,
+                'unit_description': 'per document',
+                'classification_credit': 0.5,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Content-based Image Retrieval',
+                'base_credit': 2.0,
+                'unit_description': 'per image set',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Website Rating',
+                'base_credit': 1.0,
+                'unit_description': 'per page',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Visual Ranker',
+                'base_credit': 1.5,
+                'unit_description': 'per image set',
+                'classification_credit': 1.5,
+            },
+            
+            # Ranking & Scoring (Medical Premium)
+            {
+                'data_type': '2d_image',
+                'modality': 'Pairwise Regression (Medical)',
+                'base_credit': 2.0,
+                'unit_description': 'per comparison',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Pairwise Classification (Medical)',
+                'base_credit': 1.6,
+                'unit_description': 'per comparison',
+                'classification_credit': 1.6,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Document Retrieval (Medical)',
+                'base_credit': 1.0,
+                'unit_description': 'per document',
+                'classification_credit': 1.0,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Content-based Image Retrieval (Medical)',
+                'base_credit': 4.0,
+                'unit_description': 'per image set',
+                'classification_credit': 4.0,
+            },
+            {
+                'data_type': 'document',
+                'modality': 'Website Rating (Medical)',
+                'base_credit': 2.0,
+                'unit_description': 'per page',
+                'classification_credit': 2.0,
+            },
+            {
+                'data_type': '2d_image',
+                'modality': 'Visual Ranker (Medical)',
+                'base_credit': 3.0,
+                'unit_description': 'per image set',
+                'classification_credit': 3.0,
+            },
+        ]
+        
+        created_count = 0
+        skipped_count = 0
+        
+        for pricing in pricing_data:
+            # Use get_or_create to preserve existing pricing data
+            obj, created = AnnotationPricing.objects.get_or_create(
+                data_type=pricing['data_type'],
+                modality=pricing['modality'],
+                defaults=pricing
+            )
+            
+            if created:
+                created_count += 1
+                self.stdout.write(self.style.SUCCESS(
+                    f'✓ Created: {obj.get_data_type_display()} - {obj.modality}'
+                ))
+            else:
+                skipped_count += 1
+                self.stdout.write(f'  Skipped (already exists): {obj.get_data_type_display()} - {obj.modality}')
+        
+        self.stdout.write(self.style.SUCCESS(
+            f'\n✅ Successfully initialized pricing: {created_count} created, {skipped_count} skipped (existing data preserved)'
+        ))
+
+
+
+
+

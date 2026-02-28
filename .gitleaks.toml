@@ -1,0 +1,18 @@
+title = "CF"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allow list"
+stopwords = [
+    '''keyEntities''',
+    '''shiftKey''',
+    '''duplicated''',
+]
+paths = [
+    '''gitleaks\.toml''',
+    '''cynaps\/feature_flags\.json''',
+    '''docs/.*'''
+]
+

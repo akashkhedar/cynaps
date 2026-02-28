@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-color-scheme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cynaps - Medical Data Annotation Platform</title>
+    <base href="/" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Cynaps is a medical data annotation platform connecting healthcare AI companies with expert annotators. High-quality medical imaging annotations for AI/ML training." />
+    <meta name="keywords" content="medical annotation, healthcare AI, data labeling, medical imaging, radiology annotation, pathology annotation, AI training data" />
+    <meta name="author" content="Cynaps" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cynaps.xyz/" />
+    <meta property="og:title" content="Cynaps - Medical Data Annotation Platform" />
+    <meta property="og:description" content="Connect with expert annotators for high-quality medical data annotation. Trusted by healthcare AI companies worldwide." />
+    <meta property="og:image" content="https://cynaps.xyz/static/images/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Cynaps" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://cynaps.xyz/" />
+    <meta name="twitter:title" content="Cynaps - Medical Data Annotation Platform" />
+    <meta name="twitter:description" content="Connect with expert annotators for high-quality medical data annotation. Trusted by healthcare AI companies worldwide." />
+    <meta name="twitter:image" content="https://cynaps.xyz/static/images/og-image.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://cynaps.xyz/" />
+    
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Cynaps" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://cynaps.xyz/#organization",
+          "name": "Cynaps",
+          "url": "https://cynaps.xyz",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://cynaps.xyz/static/images/og-image.png",
+            "width": 1200,
+            "height": 630
+          },
+          "description": "Medical data annotation platform connecting healthcare AI companies with expert annotators.",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "url": "https://cynaps.xyz/contact"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://cynaps.xyz/#website",
+          "url": "https://cynaps.xyz",
+          "name": "Cynaps",
+          "description": "Medical Data Annotation Platform",
+          "publisher": {
+            "@id": "https://cynaps.xyz/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://cynaps.xyz/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Cynaps",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Professional medical data annotation platform for healthcare AI development"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Google Fonts for Hero Section -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=VT323&family=Press+Start+2P&family=Share+Tech+Mono&family=Silkscreen&family=Major+Mono+Display&family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Global Security Styles - Prevent image extraction -->
+    <style>
+      /* Disable selection on images and canvases */
+      img,
+      canvas,
+      video {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        pointer-events: none;
+        -webkit-touch-callout: none;
+        /* Prevent dragging */
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+      }
+
+      /* Re-enable pointer events for interactive elements */
+      img[data-interactive="true"],
+      canvas[data-interactive="true"],
+      video[controls] {
+        pointer-events: auto;
+      }
+
+      /* Disable printing of sensitive content */
+      @media print {
+        .secure-content,
+        .dm-content,
+        .cf-object,
+        [data-secure="true"] {
+          display: none !important;
+        }
+
+        body::before {
+          content: "Printing is disabled for security reasons.";
+          display: block;
+          padding: 20px;
+          font-size: 18px;
+          color: #333;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Global Security Scripts - Block extraction attempts -->
+    <script>
+      (function () {
+        "use strict";
+
+        // Block context menu on images
+        document.addEventListener(
+          "contextmenu",
+          function (e) {
+            const target = e.target;
+            if (
+              target.tagName === "IMG" ||
+              target.tagName === "CANVAS" ||
+              target.tagName === "VIDEO"
+            ) {
+              e.preventDefault();
+              return false;
+            }
+            // Also block on containers with secure class
+            if (
+              target.closest(
+                '.secure-content, .dm-content, [data-secure="true"]'
+              )
+            ) {
+              e.preventDefault();
+              return false;
+            }
+          },
+          true
+        );
+
+        // Block drag operations on images
+        document.addEventListener(
+          "dragstart",
+          function (e) {
+            const target = e.target;
+            if (
+              target.tagName === "IMG" ||
+              target.tagName === "CANVAS" ||
+              target.tagName === "VIDEO"
+            ) {
+              e.preventDefault();
+              return false;
+            }
+          },
+          true
+        );
+
+        // Block keyboard shortcuts for saving/copying
+        document.addEventListener(
+          "keydown",
+          function (e) {
+            // Ctrl+S (Save), Ctrl+Shift+S (Save As)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+              e.preventDefault();
+              return false;
+            }
+            // Ctrl+P (Print)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+              e.preventDefault();
+              return false;
+            }
+            // Ctrl+Shift+I (DevTools) - note: this won't work in all browsers
+            if (
+              (e.ctrlKey || e.metaKey) &&
+              e.shiftKey &&
+              e.key.toLowerCase() === "i"
+            ) {
+              e.preventDefault();
+              return false;
+            }
+            // F12 (DevTools)
+            if (e.key === "F12") {
+              e.preventDefault();
+              return false;
+            }
+          },
+          true
+        );
+
+        // Block copy events on sensitive content
+        document.addEventListener(
+          "copy",
+          function (e) {
+            const selection = window.getSelection();
+            if (selection && selection.anchorNode) {
+              const container = selection.anchorNode.parentElement;
+              if (
+                container &&
+                container.closest(
+                  '.secure-content, .dm-content, [data-secure="true"]'
+                )
+              ) {
+                e.preventDefault();
+                return false;
+              }
+            }
+          },
+          true
+        );
+
+        // Console warning
+        console.log(
+          "%c⚠️ Security Notice",
+          "color: red; font-size: 20px; font-weight: bold;"
+        );
+        console.log(
+          "%cAttempting to extract data from this application may violate terms of service and is logged for security auditing.",
+          "color: orange; font-size: 14px;"
+        );
+      })();
+    </script>
+  </body>
+</html>

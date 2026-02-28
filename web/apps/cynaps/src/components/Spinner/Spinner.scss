@@ -1,0 +1,37 @@
+.spinner-ls {
+  --spinner-size: 50px;
+  --spinner-color: #8B5CF6; /* Violet */
+  --spinner-bg: rgba(139, 92, 246, 0.2);
+  --spinner-duration: 0.8s;
+
+  display: inline-block;
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  vertical-align: middle;
+
+  &__body {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid var(--spinner-bg);
+    border-top-color: var(--spinner-color);
+    box-sizing: border-box;
+    
+    /* Tech/Cyber Glow Effect */
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+
+    &:not(.spinner-ls__body_stopped) {
+      animation: cyber-spin var(--spinner-duration) linear infinite;
+    }
+  }
+}
+
+@keyframes cyber-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

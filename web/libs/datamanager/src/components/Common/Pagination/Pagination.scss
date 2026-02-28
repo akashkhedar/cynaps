@@ -1,0 +1,226 @@
+.pagination-dm {
+  --button-color: #8b5cf6;
+  --border-radius: 6px;
+  --height: 40px;
+  --font-size: 13px;
+  --line-height: 19px;
+
+  height: var(--height);
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  &_size {
+    &_small {
+      --height: 28px;
+      --border-radius: 4px;
+      --font-size: 11px;
+      --line-height: 15px;
+    }
+  }
+
+  &_disabled {
+    --button-color: #374151;
+
+    background-color: rgba(31, 41, 55, 0.5);
+    pointer-events: none;
+  }
+
+  &__label {
+    padding-right: 16px;
+    color: #6b7280;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    .pagination-dm_size_small & {
+      padding-right: 8px;
+    }
+  }
+
+  &__navigation {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    border-radius: var(--border-radius, 6px);
+    background: #0a0a0a;
+    border: 1px solid #1f2937;
+
+    .pagination-dm_waiting & {
+      pointer-events: none;
+      animation: button-waiting 1s linear infinite;
+      background-image: repeating-linear-gradient(-63.43deg,
+          rgba(139, 92, 246, 0.1) 1px, #0a0a0a 2px, #0a0a0a 6px,
+          rgba(139, 92, 246, 0.1) 7px,
+          rgba(139, 92, 246, 0.1) 12px);
+    }
+  }
+
+  &__divider {
+    width: 1px;
+    height: 30px;
+    background-color: #1f2937;
+
+    .pagination-dm_size_small & {
+      height: 20px;
+    }
+  }
+
+  &__btn {
+    width: 37px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(139, 92, 246, 0.12);
+      color: #a78bfa;
+      transform: scale(1.05);
+    }
+
+    .pagination-dm_waiting & {
+      opacity: 0.5;
+    }
+
+    .pagination-dm_size_small & {
+      width: 24px;
+    }
+
+    &_disabled {
+      pointer-events: none;
+
+      --button-color: #374151;
+    }
+
+    &_arrow-left,
+    &_arrow-right {
+      position: relative;
+
+      &::before,
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 9px;
+        height: 9px;
+        border: 2px solid var(--button-color);
+        border-bottom: none;
+        border-right: none;
+      }
+
+      &::after {
+        display: none;
+      }
+
+      .pagination-dm_size_small & {
+        &::before,
+        &::after {
+          width: 5px;
+          height: 5px;
+        }
+      }
+    }
+
+    &_arrow-left {
+      &::before,
+      &::after {
+        transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+      }
+    }
+
+    &_arrow-right {
+      &::before,
+      &::after {
+        transform: translate3d(-50%, -50%, 0) rotate(135deg);
+      }
+    }
+
+    &_arrow-left-double {
+      &::after {
+        display: block;
+        margin-left: 7px;
+      }
+    }
+
+    &_arrow-right-double {
+      &::after {
+        display: block;
+        margin-left: -7px;
+      }
+    }
+  }
+
+  &__input {
+    width: 100px;
+    height: calc(100% - 2px);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #1f2937;
+    border-top: none;
+    border-bottom: none;
+    background: transparent;
+    margin: 1px 0;
+
+    .pagination-dm_waiting & {
+      opacity: 0.5;
+    }
+
+    .pagination-dm_size_small & {
+      width: 70px;
+    }
+
+    input {
+      width: 100%;
+      height: calc(100% - 2px);
+      border: none;
+      margin: 1px 0;
+      padding: 0;
+      outline: none;
+      text-align: center;
+      background: none;
+      font-weight: 500;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      color: #e8e4d9;
+      
+      &:focus {
+        color: #8b5cf6;
+      }
+    }
+  }
+
+  &__page-indicator {
+    flex: 1;
+    user-select: none;
+    font-weight: 500;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    color: #e8e4d9;
+
+    span {
+      font-weight: normal;
+      opacity: 0.5;
+      color: #6b7280;
+    }
+  }
+
+  &__page-size {
+    min-width: 170px;
+    padding-left: 16px;
+
+    .pagination-dm_size_small & {
+      padding-left: 8px;
+      min-width: 130px;
+    }
+  }
+}

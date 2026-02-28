@@ -1,0 +1,90 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=no" />
+    <meta name="theme-color" content="#7c3aed" />
+    
+    <title>Cynaps - Medical Data Annotation Platform</title>
+    <meta name="description" content="Cynaps is a medical data annotation platform connecting healthcare AI companies with expert annotators. High-quality medical imaging annotations for AI/ML training." />
+    <meta name="keywords" content="medical annotation, healthcare AI, data labeling, medical imaging, radiology annotation, pathology annotation, AI training data" />
+    <meta name="author" content="Cynaps" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cynaps.xyz/" />
+    <meta property="og:title" content="Cynaps - Medical Data Annotation Platform" />
+    <meta property="og:description" content="Connect with expert annotators for high-quality medical data annotation. Trusted by healthcare AI companies worldwide." />
+    <meta property="og:image" content="https://cynaps.xyz/static/images/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Cynaps" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://cynaps.xyz/" />
+    <meta name="twitter:title" content="Cynaps - Medical Data Annotation Platform" />
+    <meta name="twitter:description" content="Connect with expert annotators for high-quality medical data annotation. Trusted by healthcare AI companies worldwide." />
+    <meta name="twitter:image" content="https://cynaps.xyz/static/images/og-image.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://cynaps.xyz/" />
+    
+    <link href="{{settings.HOSTNAME}}{% static 'images/favicon.ico' %}" rel="shortcut icon" />
+    
+    <!-- CSS -->
+    <link
+      href="{{settings.FRONTEND_HOSTNAME}}/react-app/main.css?v={{ versions.backend.commit }}"
+      rel="stylesheet"
+    />
+    
+    <script>
+      function handleThemeColor() {
+        let themeColor = window.localStorage.getItem("preferred-color-scheme");
+        if (themeColor === "Auto") {
+          themeColor =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "Dark"
+              : "Light";
+        } else if (!themeColor) {
+          themeColor = "Light";
+        }
+        document.documentElement.setAttribute(
+          "data-color-scheme",
+          themeColor.toLowerCase()
+        );
+      }
+      handleThemeColor();
+    </script>
+  </head>
+
+  <body>
+    <div class="app-wrapper"></div>
+
+    <template id="main-content">
+      <main class="main"></main>
+    </template>
+
+    <template id="context-menu-left"></template>
+    
+    <template id="context-menu-right"></template>
+
+    <script id="app-settings" nonce="{{request.csp_nonce}}">
+      window.APP_SETTINGS = Object.assign(window.APP_SETTINGS || {}, {
+        hostname: "{{ settings.HOSTNAME }}",
+        user: null,
+        feature_flags: {},
+        feature_flags_default_value: false
+      });
+    </script>
+
+    <!-- React App Scripts -->
+    <script src="{{settings.FRONTEND_HOSTNAME}}/react-app/runtime.js?v={{ versions.backend.commit }}"></script>
+    <script src="{{settings.FRONTEND_HOSTNAME}}/react-app/vendor.js?v=1"></script>
+    <script src="{{settings.FRONTEND_HOSTNAME}}/react-app/main.js?v={{ versions.backend.commit }}"></script>
+  </body>
+</html>

@@ -1,0 +1,1014 @@
+{
+  "graph": {
+    "nodes": {
+      "frontend-test": {
+        "name": "frontend-test",
+        "type": "lib",
+        "data": {
+          "root": "libs/frontend-test",
+          "name": "frontend-test",
+          "tags": [
+            "npm:public"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/frontend-tests",
+              "packageVersion": "1.0.0",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "nx-release-publish": {
+              "executor": "@nx/js:release-publish",
+              "dependsOn": [
+                "^nx-release-publish"
+              ],
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/frontend-test/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "datamanager": {
+        "name": "datamanager",
+        "type": "lib",
+        "data": {
+          "root": "libs/datamanager",
+          "name": "datamanager",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/datamanager",
+              "packageVersion": "0.0.0",
+              "packageMain": "src/index.js",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "build": {
+              "executor": "@nx/webpack:webpack",
+              "defaultConfiguration": "production",
+              "options": {
+                "compiler": "babel",
+                "webpackConfig": "webpack.config.js",
+                "tsConfig": "libs/datamanager/tsconfig.lib.json",
+                "main": "libs/datamanager/src/index.js",
+                "outputPath": "dist/libs/datamanager",
+                "isolatedConfig": true,
+                "generatePackageJson": true
+              },
+              "configurations": {
+                "development": {
+                  "extractLicenses": false,
+                  "optimization": false,
+                  "sourceMap": true,
+                  "vendorChunk": true
+                },
+                "production": {
+                  "optimization": true,
+                  "sourceMap": false,
+                  "namedChunks": false,
+                  "extractLicenses": true,
+                  "vendorChunk": false
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "unit": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/datamanager/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true
+            },
+            "version": {
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": "libs/datamanager",
+                "command": "node ../../tools/version/version.mjs"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/tools/version.mjs"
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/{projectRoot}/version.json"
+              ]
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/datamanager/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "app-common": {
+        "name": "app-common",
+        "type": "lib",
+        "data": {
+          "root": "libs/app-common",
+          "name": "app-common",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/app-common",
+              "packageVersion": "0.0.0",
+              "packageMain": "src/index.ts",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "options": {
+                "lintFilePatterns": [
+                  "libs/app-common/**/*.{ts,tsx,js,jsx}"
+                ]
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/app-common/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ]
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/app-common/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "cynaps-e2e": {
+        "name": "cynaps-e2e",
+        "type": "e2e",
+        "data": {
+          "root": "apps/cynaps-e2e",
+          "name": "cynaps-e2e",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "apps/cynaps-e2e/src",
+          "projectType": "application",
+          "tags": [],
+          "implicitDependencies": [
+            "cynaps"
+          ],
+          "targets": {
+            "e2e": {
+              "executor": "@nx/cypress:cypress",
+              "options": {
+                "cypressConfig": "apps/cynaps-e2e/cypress.config.ts",
+                "baseUrl": "http://localhost:8080/",
+                "testingType": "e2e"
+              },
+              "configurations": {
+                "production": {
+                  "devServerTarget": "cynaps:serve:production"
+                },
+                "ci": {
+                  "devServerTarget": "cynaps:serve-static"
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production"
+              ]
+            }
+          }
+        }
+      },
+      "playground": {
+        "name": "playground",
+        "type": "app",
+        "data": {
+          "root": "apps/playground",
+          "name": "playground",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "apps/playground/src",
+          "projectType": "application",
+          "tags": [],
+          "targets": {
+            "build": {
+              "executor": "@nx/webpack:webpack",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "defaultConfiguration": "production",
+              "options": {
+                "compiler": "babel",
+                "outputPath": "dist/apps/playground/playground-assets",
+                "index": "apps/playground/src/index.html",
+                "baseHref": "/",
+                "main": "apps/playground/src/main.tsx",
+                "tsConfig": "apps/playground/tsconfig.app.json",
+                "assets": [],
+                "styles": [],
+                "scripts": [],
+                "isolatedConfig": true,
+                "webpackConfig": "webpack.config.js"
+              },
+              "configurations": {
+                "development": {
+                  "extractLicenses": false,
+                  "optimization": false,
+                  "sourceMap": true,
+                  "vendorChunk": true,
+                  "baseHref": "/"
+                },
+                "production": {
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/playground/src/environments/environment.ts",
+                      "with": "apps/playground/src/environments/environment.prod.ts"
+                    }
+                  ],
+                  "optimization": true,
+                  "sourceMap": false,
+                  "namedChunks": false,
+                  "extractLicenses": true,
+                  "vendorChunk": false,
+                  "baseHref": "/playground-assets/"
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "executor": "@nx/webpack:dev-server",
+              "defaultConfiguration": "development",
+              "options": {
+                "buildTarget": "playground:build",
+                "port": 4200,
+                "hmr": true
+              },
+              "configurations": {
+                "development": {
+                  "buildTarget": "playground:build:development"
+                },
+                "production": {
+                  "buildTarget": "playground:build:production",
+                  "hmr": false
+                }
+              },
+              "parallelism": true,
+              "continuous": true
+            },
+            "serve-static": {
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "playground:build"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "unit": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "apps/playground/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true
+            }
+          },
+          "implicitDependencies": []
+        }
+      },
+      "storybook": {
+        "name": "storybook",
+        "type": "lib",
+        "data": {
+          "root": "libs/storybook",
+          "name": "storybook",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/storybook/src",
+          "projectType": "library",
+          "tags": [],
+          "targets": {
+            "test": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/storybook/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ]
+            },
+            "storybook": {
+              "executor": "@nx/storybook:storybook",
+              "options": {
+                "port": 4400,
+                "configDir": "libs/storybook/.storybook",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "libs/ui/src/fonts",
+                    "output": "fonts"
+                  }
+                ]
+              },
+              "configurations": {
+                "ci": {
+                  "quiet": true
+                }
+              },
+              "parallelism": true,
+              "continuous": true
+            },
+            "build-storybook": {
+              "executor": "@nx/storybook:build",
+              "outputs": [
+                "{options.outputDir}"
+              ],
+              "options": {
+                "outputDir": "dist/libs/storybook/storybook",
+                "configDir": "libs/storybook/.storybook"
+              },
+              "configurations": {
+                "ci": {
+                  "quiet": true
+                }
+              },
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{projectRoot}/.storybook/**/*",
+                "{projectRoot}/tsconfig.storybook.json"
+              ]
+            },
+            "test-storybook": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "test-storybook -c libs/storybook/.storybook --url=http://localhost:4400"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "implicitDependencies": []
+        }
+      },
+      "cynaps": {
+        "name": "cynaps",
+        "type": "app",
+        "data": {
+          "root": "apps/cynaps",
+          "name": "cynaps",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "apps/cynaps/src",
+          "projectType": "application",
+          "tags": [],
+          "targets": {
+            "build": {
+              "executor": "@nx/webpack:webpack",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "defaultConfiguration": "production",
+              "options": {
+                "compiler": "babel",
+                "outputPath": "dist/apps/cynaps",
+                "index": "apps/cynaps/src/index.html",
+                "baseHref": "/",
+                "main": "apps/cynaps/src/main.tsx",
+                "tsConfig": "apps/cynaps/tsconfig.app.json",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "apps/cynaps/public",
+                    "output": "."
+                  }
+                ],
+                "styles": [],
+                "scripts": [],
+                "isolatedConfig": true,
+                "webpackConfig": "webpack.config.js"
+              },
+              "configurations": {
+                "development": {
+                  "extractLicenses": false,
+                  "optimization": false,
+                  "sourceMap": true,
+                  "vendorChunk": true
+                },
+                "production": {
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/cynaps/src/environments/environment.ts",
+                      "with": "apps/cynaps/src/environments/environment.prod.ts"
+                    }
+                  ],
+                  "optimization": true,
+                  "sourceMap": false,
+                  "namedChunks": false,
+                  "extractLicenses": true,
+                  "vendorChunk": false
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "executor": "@nx/webpack:dev-server",
+              "defaultConfiguration": "development",
+              "options": {
+                "buildTarget": "cynaps:build",
+                "hmr": true
+              },
+              "configurations": {
+                "development": {
+                  "buildTarget": "cynaps:build:development"
+                },
+                "production": {
+                  "buildTarget": "cynaps:build:production",
+                  "hmr": false
+                }
+              },
+              "parallelism": true,
+              "continuous": true
+            },
+            "serve-static": {
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "cynaps:build"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "unit": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "apps/cynaps/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true
+            },
+            "version": {
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": "apps/cynaps",
+                "command": "node ../../tools/version/version.mjs"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/tools/version.mjs"
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/{projectRoot}/version.json"
+              ]
+            }
+          },
+          "implicitDependencies": []
+        }
+      },
+      "editor": {
+        "name": "editor",
+        "type": "lib",
+        "data": {
+          "root": "libs/editor",
+          "name": "editor",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/editor",
+              "packageVersion": "0.0.0",
+              "packageMain": "src/index.js",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "build": {
+              "executor": "@nx/webpack:webpack",
+              "defaultConfiguration": "production",
+              "options": {
+                "compiler": "babel",
+                "webpackConfig": "webpack.config.js",
+                "index": "libs/editor/public/index.html",
+                "tsConfig": "libs/editor/tsconfig.lib.json",
+                "main": "libs/editor/src/standalone.js",
+                "outputPath": "dist/libs/editor",
+                "isolatedConfig": true,
+                "generatePackageJson": true,
+                "assets": [
+                  {
+                    "glob": "public",
+                    "input": "libs/editor",
+                    "output": "public/"
+                  }
+                ]
+              },
+              "configurations": {
+                "development": {
+                  "extractLicenses": false,
+                  "optimization": false,
+                  "sourceMap": true,
+                  "vendorChunk": true
+                },
+                "production": {
+                  "optimization": true,
+                  "sourceMap": false,
+                  "namedChunks": false,
+                  "extractLicenses": true,
+                  "vendorChunk": false
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "executor": "@nx/webpack:dev-server",
+              "defaultConfiguration": "development",
+              "options": {
+                "port": 3000,
+                "buildTarget": "editor:build",
+                "hmr": true,
+                "watch": true,
+                "liveReload": true
+              },
+              "configurations": {
+                "development": {
+                  "buildTarget": "editor:build"
+                }
+              },
+              "parallelism": true,
+              "continuous": true
+            },
+            "unit": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/editor/jest.config.js",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true
+            },
+            "integration": {
+              "executor": "@nx/cypress:cypress",
+              "options": {
+                "cypressConfig": "libs/editor/cypress.config.ts",
+                "testingType": "e2e",
+                "baseUrl": "http://localhost:3000"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "version": {
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": "libs/editor",
+                "command": "node ../../tools/version/version.mjs"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/tools/version.mjs"
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/{projectRoot}/version.json"
+              ]
+            },
+            "docs": {
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": "libs/editor",
+                "command": "node scripts/create-docs.js ../../../docs/source/includes/tags"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "extract-antd-no-reset": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "node ../../tools/extract-antd-no-reset/extract-antd-no-reset.mjs",
+                "cwd": "libs/editor"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/editor/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "core": {
+        "name": "core",
+        "type": "lib",
+        "data": {
+          "root": "libs/core",
+          "name": "core",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/core",
+              "packageVersion": "0.0.0",
+              "packageMain": "src/index.ts",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "unit": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/core/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/core/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "ui": {
+        "name": "ui",
+        "type": "lib",
+        "data": {
+          "root": "libs/ui",
+          "name": "ui",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@cynaps/ui",
+              "packageVersion": "0.0.0",
+              "packageMain": "src/index.ts",
+              "isInPackageManagerWorkspaces": false
+            }
+          },
+          "targets": {
+            "build": {
+              "executor": "@nx/webpack:webpack",
+              "defaultConfiguration": "production",
+              "options": {
+                "compiler": "babel",
+                "webpackConfig": "webpack.config.js",
+                "tsConfig": "libs/ui/tsconfig.lib.json",
+                "main": "libs/ui/src/index.ts",
+                "outputPath": "dist/libs/ui",
+                "isolatedConfig": true,
+                "generatePackageJson": true
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "test": {
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "libs/ui/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              },
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ]
+            },
+            "storybook": {
+              "executor": "@nx/storybook:storybook",
+              "options": {
+                "port": 4400,
+                "configDir": "libs/storybook/.storybook"
+              },
+              "configurations": {
+                "ci": {
+                  "quiet": true
+                }
+              },
+              "parallelism": true,
+              "continuous": true
+            },
+            "build-storybook": {
+              "executor": "@nx/storybook:build",
+              "outputs": [
+                "{options.outputDir}"
+              ],
+              "options": {
+                "outputDir": "dist/storybook/ui",
+                "configDir": "libs/storybook/.storybook"
+              },
+              "configurations": {
+                "ci": {
+                  "quiet": true
+                }
+              },
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{projectRoot}/.storybook/**/*",
+                "{projectRoot}/tsconfig.storybook.json"
+              ]
+            },
+            "test-storybook": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "test-storybook -c libs/ui/.storybook --url=http://localhost:4400"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "design-tokens": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "node ./tools/design-tokens-converter/design-tokens-converter.mjs",
+                "cwd": "."
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/ui/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      }
+    },
+    "dependencies": {
+      "frontend-test": [
+        {
+          "source": "frontend-test",
+          "target": "editor",
+          "type": "static"
+        }
+      ],
+      "datamanager": [
+        {
+          "source": "datamanager",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "datamanager",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "datamanager",
+          "target": "app-common",
+          "type": "static"
+        },
+        {
+          "source": "datamanager",
+          "target": "editor",
+          "type": "static"
+        }
+      ],
+      "app-common": [
+        {
+          "source": "app-common",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "app-common",
+          "target": "cynaps",
+          "type": "static"
+        },
+        {
+          "source": "app-common",
+          "target": "core",
+          "type": "static"
+        }
+      ],
+      "cynaps-e2e": [
+        {
+          "source": "cynaps-e2e",
+          "target": "cynaps",
+          "type": "implicit"
+        }
+      ],
+      "playground": [
+        {
+          "source": "playground",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "playground",
+          "target": "editor",
+          "type": "dynamic"
+        },
+        {
+          "source": "playground",
+          "target": "core",
+          "type": "static"
+        }
+      ],
+      "storybook": [
+        {
+          "source": "storybook",
+          "target": "ui",
+          "type": "static"
+        }
+      ],
+      "cynaps": [
+        {
+          "source": "cynaps",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "cynaps",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "cynaps",
+          "target": "datamanager",
+          "type": "static"
+        },
+        {
+          "source": "cynaps",
+          "target": "datamanager",
+          "type": "dynamic"
+        },
+        {
+          "source": "cynaps",
+          "target": "app-common",
+          "type": "static"
+        },
+        {
+          "source": "cynaps",
+          "target": "editor",
+          "type": "dynamic"
+        }
+      ],
+      "editor": [
+        {
+          "source": "editor",
+          "target": "frontend-test",
+          "type": "static"
+        },
+        {
+          "source": "editor",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "editor",
+          "target": "core",
+          "type": "static"
+        }
+      ],
+      "core": [],
+      "ui": [
+        {
+          "source": "ui",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "ui",
+          "target": "storybook",
+          "type": "static"
+        }
+      ]
+    }
+  }
+}

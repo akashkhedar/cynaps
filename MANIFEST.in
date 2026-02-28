@@ -1,0 +1,38 @@
+# react CF / react-app with dm
+recursive-include web/dist/libs/editor *
+include web/dist/apps/cynaps/*
+recursive-include web/dist/libs/datamanager/ *
+
+# html template files
+recursive-include cynaps *.html
+
+# exclude node modules
+prune web/node_modules
+prune web/build-tmp
+
+# annotation templates
+recursive-include cynaps/annotation_templates *
+
+# core
+recursive-include cynaps/core/static *
+recursive-include cynaps/core/static_build *
+include cynaps/core/utils/schema/*.json
+include cynaps/core/templatetags/*.py
+include cynaps/core/version_.py
+include cynaps/core/all_urls.json
+
+# io storages
+recursive-include cynaps/io_storages *.yml
+
+# tests
+recursive-include cynaps/tests *.sh
+recursive-include cynaps/tests/loadtests *.txt
+recursive-include cynaps/tests/test_data *.yml
+recursive-include cynaps/tests/test_suites/samples *
+recursive-include cynaps/tests/test_suites *.yml
+
+include cynaps/pytest.ini
+
+# feature flags
+include cynaps/feature_flags.json
+

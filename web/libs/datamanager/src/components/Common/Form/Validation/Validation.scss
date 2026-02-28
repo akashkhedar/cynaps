@@ -1,0 +1,32 @@
+.form-validation {
+  margin-top: 32px;
+
+  &__group {
+    padding: 10px 14px;
+    border-radius: 6px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    &+& {
+      margin-top: 8px;
+    }
+  }
+
+  &__field {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ef4444;
+  }
+
+  &__messages {
+    margin-top: 4px;
+  }
+
+  &__message {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+}

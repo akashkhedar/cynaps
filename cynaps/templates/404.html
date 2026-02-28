@@ -1,0 +1,107 @@
+{% extends 'simple.html' %}
+{% load static %}
+
+{% block page_labeling %}
+  <title>404 | Cynaps</title>
+  {{ block.super }}
+{% endblock %}
+
+{% block head %}
+  <style>
+    .error-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .error-code {
+      font-family: var(--font-display);
+      font-size: clamp(6rem, 15vw, 12rem);
+      font-weight: 700;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--background-secondary);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .error-code::before {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.5;
+      z-index: -1;
+      filter: blur(8px);
+    }
+
+    .error-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 1rem 0;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .error-message {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    /* Decorative elements */
+    .decoration {
+      position: absolute;
+      background: var(--accent-primary);
+      opacity: 0.1;
+      filter: blur(40px);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .decoration-1 { width: 300px; height: 300px; top: -100px; left: -100px; }
+    .decoration-2 { width: 200px; height: 200px; bottom: 10%; right: 10%; background: var(--accent-secondary); }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container error-page">
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
+  
+  <div class="error-code" data-text="404">404</div>
+  
+  <h1 class="error-title">Page not found</h1>
+  <p class="error-message">
+    The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+  </p>
+  
+  <div class="actions">
+    <button class="btn" style="background: transparent; border: 1px solid var(--border-color);" onclick="history.back()">
+      Go Back
+    </button>
+    <a href="/" class="btn">
+      Return Home
+    </a>
+  </div>
+</div>
+{% endblock %}

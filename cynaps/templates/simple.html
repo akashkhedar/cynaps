@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block page_labeling %}
+  <title>Cynaps</title>
+  <link href="{{settings.HOSTNAME}}{% static 'images/favicon.ico' %}" rel="shortcut icon"/>
+{% endblock %}
+
+{% block head %}
+  <!-- Specific head content for simple pages if needed -->
+{% endblock %}
+
+{% block app-css %}
+  {{ block.super }}
+  <!-- Ensure main styles are loaded -->
+{% endblock %}
+
+{% block theme_colors %}
+  <!-- Inherit theme handling from base -->
+  {{ block.super }}
+{% endblock %}
+
+{% block app_interface %}
+  <div class="app-wrapper">
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+{% endblock %}
+
+<!-- Override complex blocks to keep it simple -->
+{% block entropy_app_bar %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block subnav %}{% endblock %}
+{% block footer %}{% endblock %}

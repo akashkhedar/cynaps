@@ -1,0 +1,46 @@
+.datamanager {
+  height: calc(100vh - var(--header-height));
+  position: relative;
+  z-index: 1;
+
+  #cynaps-dm [class*="Annotations_annotation_selected"] {
+    background: var(--color-primary-surface-content);
+  }
+}
+
+.datamanager * {
+  font-family: var(--font-sans) !important;
+}
+
+// Context menu button styling (Settings link in header)
+.dm-context-button {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  
+  // Override buttonVariant defaults
+  background: black !important;
+  border: 1px solid rgba(55, 65, 81, 0.5) !important;
+  border-radius: 10px !important;
+  color: #c4b5fd !important;
+  padding: 0 16px !important; 
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-right: 16px !important;
+  margin-left: 0 !important;
+
+  &:hover {
+    background: black !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.15) !important;
+    color: #c4b5fd !important;
+  }
+}
+

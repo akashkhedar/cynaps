@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #1e293b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+        .amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ef4444;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .details {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .pay-button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .pay-button {
+            display: inline-block;
+            background-color: #8b5cf6;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .instructions {
+            font-size: 13px;
+            color: #6b7280;
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>New Payout Request</h2>
+    </div>
+    <div class="content">
+        <p>A new payout request requires your action.</p>
+        
+        <div class="amount">
+            ₹{{ amount }}
+        </div>
+        
+        <div class="details">
+            <p><strong>Annotator:</strong> {{ name }} ({{ email }})</p>
+            <p><strong>Method:</strong> {{ method }}</p>
+            {% if method == 'upi' %}
+            <p><strong>UPI ID:</strong> {{ upi_id }}</p>
+            {% else %}
+            <p><strong>Bank Name:</strong> {{ bank_name }}</p>
+            <p><strong>Account Holder:</strong> {{ account_holder }}</p>
+            <p><strong>Account Number:</strong> {{ account_number }}</p>
+            <p><strong>IFSC Code:</strong> {{ ifsc_code }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="pay-button-container">
+            {% if method == 'upi' %}
+            <a href="{{ base_url }}/api/annotators/payouts/{{ payout_id }}/upi-redirect?pa={{ upi_id }}&pn={{ name }}&am={{ amount }}&app=phonepe" class="pay-button" style="margin-bottom: 10px; display: block; background-color: #5f259f;">
+                Pay via PhonePe
+            </a>
+            <a href="{{ base_url }}/api/annotators/payouts/{{ payout_id }}/upi-redirect?pa={{ upi_id }}&pn={{ name }}&am={{ amount }}&app=other" class="pay-button" style="background-color: #10b981;">
+                Pay via other UPI App
+            </a>
+            {% else %}
+            <a href="https://onlinesbi.sbi.bank.in/" target="_blank" class="pay-button" style="background-color: #2563eb;">
+                Open SBI Online Banking
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="pay-button-container" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="margin-bottom: 15px; font-weight: bold; font-size: 14px;">After transferring funds manually, click below to update the system:</p>
+            <a href="{{ base_url }}/api/annotators/public/payouts/{{ payout_id }}/action/success" class="pay-button" style="background-color: #10b981; font-size: 14px; padding: 10px 20px; margin-right: 10px;">
+                ✓ Mark Paid
+            </a>
+            <a href="{{ base_url }}/api/annotators/public/payouts/{{ payout_id }}/action/failed" class="pay-button" style="background-color: #ef4444; font-size: 14px; padding: 10px 20px;">
+                ✕ Reject / Failed
+            </a>
+        </div>
+            <p><strong>Next Steps:</strong></p>
+            <ol>
+                <li>Open this email on your mobile device (for UPI) or laptop (for Bank).</li>
+                {% if method == 'upi' %}
+                <li>Tap "Pay via PhonePe" to jump straight into the PhonePe app with details pre-filled, or use the other button for GPay/Paytm.</li>
+                {% else %}
+                <li>Tap "Open SBI Online Banking" to log into SBI and transfer the funds manually using the details above.</li>
+                {% endif %}
+                <li>After successful payment (or if the payment fails/details are invalid), click the corresponding <strong>Mark Paid</strong> or <strong>Reject / Failed</strong> button above to instantly update the user's balance and email them automatically.</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

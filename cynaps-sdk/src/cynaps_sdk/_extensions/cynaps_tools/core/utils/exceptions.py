@@ -1,0 +1,9 @@
+class CynapsXMLSyntaxErrorSentryIgnored(Exception):
+    pass
+
+
+
+
+
+
+

@@ -1,0 +1,158 @@
+{% extends 'users/new-ui/user_base.html' %} 
+{% block content %} 
+{{ block.super}}
+<script nonce="{{request.csp_nonce}}">
+  gaClientIdTrackingIframe("users.login.view");
+  setTimeout(() => {
+    const cynaps_gaclient_id = sessionStorage.getItem("cynaps_gaclient_id");
+    if (window.__lsa) __lsa("users.login.view", { cynaps_gaclient_id });
+  }, 2000);
+
+  // CSRF Token Refresh: When user returns to this tab after email verification,
+  // the session may have changed, making the original CSRF token invalid.
+  // This refreshes the token when the page becomes visible again.
+  (function() {
+    let lastVisibilityState = document.visibilityState;
+    
+    document.addEventListener('visibilitychange', function() {
+      // Only refresh when page becomes visible (user returns to tab)
+      if (document.visibilityState === 'visible' && lastVisibilityState === 'hidden') {
+        fetch('{% url "csrf-token-refresh" %}', {
+          method: 'GET',
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.csrfToken) {
+            // Update all CSRF token inputs in forms on this page
+            const csrfInputs = document.querySelectorAll('input[name="csrfmiddlewaretoken"]');
+            csrfInputs.forEach(input => {
+              input.value = data.csrfToken;
+            });
+          }
+        })
+        .catch(error => {
+          console.warn('CSRF token refresh failed:', error);
+        });
+      }
+      lastVisibilityState = document.visibilityState;
+    });
+
+    // Also refresh on page focus (backup for browsers with poor visibilitychange support)
+    window.addEventListener('focus', function() {
+      fetch('{% url "csrf-token-refresh" %}', {
+        method: 'GET',
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.csrfToken) {
+          const csrfInputs = document.querySelectorAll('input[name="csrfmiddlewaretoken"]');
+          csrfInputs.forEach(input => {
+            input.value = data.csrfToken;
+          });
+        }
+      })
+      .catch(() => {}); // Silently fail on focus refresh
+    });
+  })();
+</script>
+{% endblock %} 
+{% block user_content %}
+<div class="auth-form-container">
+  <!-- Section Label - matching FeaturesSection number style -->
+  <div class="auth-section-label">
+    <span>01/</span>
+  </div>
+
+  <h2>Welcome back</h2>
+  <p class="subtitle">Sign in to continue to your workspace.</p>
+
+  <form
+    class="auth-form"
+    action="{% url 'user-login' %}?next={{ next }}"
+    method="post"
+  >
+    {% csrf_token %}
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input
+        type="text"
+        name="email"
+        id="email"
+        value="{{ form.data.email }}"
+        placeholder="you@example.com"
+        required
+        autocomplete="email"
+      />
+    </div>
+    <div class="form-field">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label for="password">Password</label>
+        <a href="{% url 'forgot-password' %}" style="font-size: 13px; color: #8b5cf6; text-decoration: none; font-family: monospace;">Forgot password?</a>
+      </div>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+        autocomplete="current-password"
+      />
+    </div>
+    {% if form.non_field_errors %} 
+    {% for error in form.non_field_errors %}
+    <p class="error-message">{{ error }}</p>
+    {% endfor %} 
+    {% if annotator_action == 'resend_verification' %}
+    <div class="annotator-action-container">
+      <p class="annotator-action-hint">
+        Didn't receive the email? Check your spam folder or request a new link.
+      </p>
+      <a href="{% url 'resend-verification' %}" class="annotator-action-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+          ></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        Resend Verification Email
+      </a>
+    </div>
+    {% endif %} 
+    {% endif %}
+    <button type="submit" class="auth-submit-btn">
+      LOG IN
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M5 12h14"></path>
+        <path d="m12 5 7 7-7 7"></path>
+      </svg>
+    </button>
+  </form>
+
+  <p class="auth-bottom-link">
+    Don't have an account?
+    <a href="{% url 'user-signup' %}{% querystring %}">Get started</a>
+  </p>
+</div> 
+{% endblock %}
