@@ -110,6 +110,12 @@ _api_urlpatterns = [
         assignment_api.ProjectReassignTasksAPI.as_view(),
         name="reassign-tasks",
     ),
+    # Generate Template API (Hackathon Track)
+    path(
+        "<int:pk>/generate-template/",
+        api.GenerateTemplateAPI.as_view(),
+        name="project-generate-template",
+    ),
 ]
 
 _api_urlpatterns_templates = [

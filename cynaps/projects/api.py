@@ -1160,6 +1160,34 @@ class ProjectAnnotatorsAPI(generics.RetrieveAPIView):
         return Response(data)
 
 
+class GenerateTemplateAPI(generics.RetrieveAPIView):
+    """
+    API for generating an XML label config via Mistral NPL.
+    """
+    permission_required = all_permissions.projects_change
+    queryset = Project.objects.all()
+
+    @extend_schema(
+        tags=["Projects"],
+        summary="Generate XML Template from NPL",
+        description="Uses Mistral AI to generate a Cynaps XML label config from a natural language prompt.",
+        responses={200: OpenApiTypes.OBJECT},
+    )
+    def post(self, request, *args, **kwargs):
+        project = self.get_object()  # ensures user has access to this project
+        prompt = request.data.get("prompt")
+        if not prompt:
+            return Response({"error": "Prompt is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            from core.mistral_client import generate_xml_template
+            xml_config = generate_xml_template(prompt)
+            return Response({"xml_config": xml_config}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error generating template: {e}", exc_info=True)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 

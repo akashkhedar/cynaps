@@ -1,0 +1,2 @@
+@akashkhedar
+started working on NPL to XML converter using Mistral AI, allowing the project owner to directly write the requirements in natural language and get the XML template generated automatically. For exmaple: "I want to classify text as spam or ham, and also highlight names of people." -> XML template.
