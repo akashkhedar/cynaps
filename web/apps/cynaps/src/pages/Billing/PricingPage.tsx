@@ -2,55 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { billingApi, SubscriptionPlan, CreditPackage } from '../../services/billingApi';
 import { Spinner } from "@cynaps/ui";
 import './PricingPage.css';
+import { Activity, ShieldCheck, Zap, Users, BarChart3, Download, Check } from 'lucide-react';
 
-// SVG Icons for Features
-const MedicalIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-  </svg>
-);
-
-const SecurityIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-
-const SpeedIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-  </svg>
-);
-
-const TeamIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-  </svg>
-);
-
-const AnalyticsIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="20" x2="18" y2="10" />
-    <line x1="12" y1="20" x2="12" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="14" />
-  </svg>
-);
-
-const ExportIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
+// Icons for Features
+const MedicalIcon = () => <Activity color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const SecurityIcon = () => <ShieldCheck color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const SpeedIcon = () => <Zap color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const TeamIcon = () => <Users color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const AnalyticsIcon = () => <BarChart3 color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const ExportIcon = () => <Download color="#8b5cf6" size={32} strokeWidth={1.5} />;
+const CheckIcon = () => <Check size={16} strokeWidth={2.5} />;
 
 interface PricingPageProps {
   onPurchase?: (planId: number, type: 'subscription' | 'credits') => void;
@@ -73,147 +34,6 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
 
-  // Demo/fallback data when API returns empty
-  const demoPlans: SubscriptionPlan[] = [
-    {
-      id: 1,
-      name: 'Starter Monthly',
-      plan_type: 'starter',
-      billing_cycle: 'monthly',
-      price_inr: 19999,
-      credits_per_month: 16000,
-      effective_rate: 1.25,
-      storage_gb: 10,
-      extra_storage_rate_per_gb: 25,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-    {
-      id: 2,
-      name: 'Growth Monthly',
-      plan_type: 'growth',
-      billing_cycle: 'monthly',
-      price_inr: 49999,
-      credits_per_month: 43000,
-      effective_rate: 1.16,
-      storage_gb: 25,
-      extra_storage_rate_per_gb: 19,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-    {
-      id: 3,
-      name: 'Scale Monthly',
-      plan_type: 'scale',
-      billing_cycle: 'monthly',
-      price_inr: 79999,
-      credits_per_month: 79999,
-      effective_rate: 1.00,
-      storage_gb: 50,
-      extra_storage_rate_per_gb: 14,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-    {
-      id: 4,
-      name: 'Starter Annual',
-      plan_type: 'starter',
-      billing_cycle: 'annual',
-      price_inr: 199990,
-      credits_per_month: 18000,
-      effective_rate: 0.93,
-      storage_gb: 10,
-      extra_storage_rate_per_gb: 25,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-    {
-      id: 5,
-      name: 'Growth Annual',
-      plan_type: 'growth',
-      billing_cycle: 'annual',
-      price_inr: 499990,
-      credits_per_month: 45000,
-      effective_rate: 0.93,
-      storage_gb: 25,
-      extra_storage_rate_per_gb: 19,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-    {
-      id: 6,
-      name: 'Scale Annual',
-      plan_type: 'scale',
-      billing_cycle: 'annual',
-      price_inr: 799990,
-      credits_per_month: 81000,
-      effective_rate: 0.82,
-      storage_gb: 50,
-      extra_storage_rate_per_gb: 14,
-      max_users: null,
-      priority_support: true,
-      api_access: true,
-      credit_rollover: true,
-      max_rollover_months: 12,
-      is_active: true,
-    },
-  ];
-
-  const demoPackages: CreditPackage[] = [
-    {
-      id: 1,
-      name: 'Explorer Package',
-      credits: 5000,
-      price_inr: 8750,
-      rate_per_credit: 1.75,
-      is_active: true,
-    },
-    {
-      id: 2,
-      name: 'Professional Package',
-      credits: 25000,
-      price_inr: 37500,
-      rate_per_credit: 1.50,
-      is_active: true,
-    },
-    {
-      id: 3,
-      name: 'Team Package',
-      credits: 100000,
-      price_inr: 135000,
-      rate_per_credit: 1.35,
-      is_active: true,
-    },
-    {
-      id: 4,
-      name: 'Enterprise PAYG',
-      credits: 500000,
-      price_inr: 650000,
-      rate_per_credit: 1.30,
-      is_active: true,
-    },
-  ];
-
   useEffect(() => {
     loadPricingData();
   }, []);
@@ -225,16 +45,12 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
         billingApi.getSubscriptionPlans(),
         billingApi.getCreditPackages(),
       ]);
-      // Use demo data if API returns empty arrays
-      setPlans(plansData.length > 0 ? plansData : demoPlans);
-      setPackages(packagesData.length > 0 ? packagesData : demoPackages);
+      setPlans(plansData);
+      setPackages(packagesData);
       setError(null);
     } catch (err: any) {
-      // On error, use demo data
-      console.warn('Failed to load pricing from API, using demo data:', err);
-      setPlans(demoPlans);
-      setPackages(demoPackages);
-      setError(null);
+      console.error('Failed to load pricing from API:', err);
+      setError('Failed to load pricing plans. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -257,7 +73,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setContactSubmitting(true);
-    
+
     try {
       const pData = {
         name: contactForm.name,
@@ -274,14 +90,14 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
         },
         body: JSON.stringify(pData)
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to send enterprise inquiry message');
       }
 
       console.log('Enterprise Contact form submitted via API');
       setContactSuccess(true);
-      
+
       // Reset form after 2 seconds
       setTimeout(() => {
         setShowContactModal(false);
@@ -363,11 +179,12 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
               <div className="card-header">
                 <h3>{plan.name.replace(` - ${billingCycle === 'monthly' ? 'Monthly' : 'Annual'}`, '')}</h3>
                 <div className="price">
+                  <span className="currency">₹</span>
                   <span className="amount">{plan.price_inr.toLocaleString()}</span>
-                  <span className="period"> Credits / {billingCycle === 'monthly' ? 'month' : 'year'}</span>
+                  <span className="period"> / {billingCycle === 'monthly' ? 'month' : 'year'}</span>
                 </div>
-                <div className="effective-rate">
-                  {plan.effective_rate.toFixed(2)} Credits per credit
+                <div className="effective-rate" style={{ color: '#10b981', fontWeight: 600 }}>
+                  Gets you {plan.credits_per_month.toLocaleString()} Credits / {billingCycle === 'monthly' ? 'month' : 'year'}
                 </div>
               </div>
 
@@ -487,11 +304,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
               <div className="card-header">
                 <h3>{pkg.credits.toLocaleString()} Credits</h3>
                 <div className="price">
+                  <span className="currency">₹</span>
                   <span className="amount">{pkg.price_inr.toLocaleString()}</span>
-                  <span className="currency"> Credits</span>
                 </div>
-                <div className="rate">
-                  {pkg.rate_per_credit.toFixed(2)} Credits per credit
+                <div className="rate" style={{ color: '#10b981', fontWeight: 600 }}>
+                  Gets you {pkg.credits.toLocaleString()} Credits
                 </div>
               </div>
 
@@ -516,7 +333,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onPurchase }) => {
 
         <div className="payg-note">
           <p>
-            <strong>Pro tip:</strong> Subscriptions offer better rates (1.00-1.25 Credits / credit) compared to PAYG (1.30-1.75 Credits / credit).
+            <strong>Pro tip:</strong> Subscriptions offer better rates (₹1.00-1.25 / credit) compared to PAYG (₹1.30-1.75 / credit).
             Subscribe to save up to 40%!
           </p>
         </div>
