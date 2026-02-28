@@ -37,7 +37,7 @@
   "scripts": {
     "sync": "make sync",
     "unsync": "make unsync",
-    "build": "npm run clean && npm run types && rollup -c",
+    "build": "npm run types && rollup -c",
     "build-deps": "make deps",
     "build-wasm": "make clean && make",
     "clean": "rm -rf ./dist && rm -rf ./decode-audio.wasm",
