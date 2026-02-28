@@ -1,0 +1,221 @@
+# Cynaps — Codebase Walkthrough & Setup Guide
+
+## Project Overview
+
+**Cynaps** is an enterprise-grade data annotation platform for ML teams. It provides a managed annotator marketplace with built-in quality assurance (honeypots, multi-annotator consensus, expert review) and credits-based billing.
+
+| Layer | Tech | Location |
+|-------|------|----------|
+| **Backend** | Django 5.1 + DRF 3.15 | `cynaps/` |
+| **Frontend** | React 18 / Nx monorepo | `web/` |
+| **Python SDK** | API client library | `cynaps-sdk/` |
+| **Infrastructure** | PostgreSQL 15, Redis 7, MinIO | [docker-compose.dev.yml](file:///f:/Projects/cynaps/docker-compose.dev.yml) |
+| **Package Mgmt** | Poetry 2.x (Python), Yarn (JS) | [pyproject.toml](file:///f:/Projects/cynaps/pyproject.toml), [web/package.json](file:///f:/Projects/cynaps/web/package.json) |
+
+---
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph Frontend["web/ — React Nx Monorepo"]
+        App["apps/Cynaps — Main UI"]
+        Editor["libs/editor — Annotation Interface"]
+        DM["libs/datamanager — Data Explorer"]
+        UI["libs/ui — Shared Components"]
+        Common["libs/app-common — API Clients"]
+    end
+
+    subgraph Backend["cynaps/ — Django Backend"]
+        Core["core — Settings, Middleware, RBAC"]
+        Projects["projects — Project Config"]
+        Tasks["tasks — Task/Annotation Models"]
+        Annotators["annotators — Workforce Mgmt"]
+        Billing["billing — Credits/Subscriptions"]
+        Users["users — Auth/Profiles"]
+        Orgs["organizations — Multi-tenancy"]
+        IO["io_storages — S3/GCS/Azure"]
+        FSM["fsm — State Machine"]
+        Exports["data_export — JSON/CSV/COCO"]
+        Imports["data_import — Uploads"]
+        Webhooks["webhooks — Events"]
+        JWT["jwt_auth — Auth"]
+    end
+
+    subgraph Infra["Infrastructure"]
+        PG["PostgreSQL 15"]
+        Redis["Redis 7"]
+        MinIO["MinIO (S3-compat)"]
+    end
+
+    App --> Core
+    Core --> PG
+    Core --> Redis
+    IO --> MinIO
+```
+
+---
+
+## Backend Django Apps
+
+| App | Purpose |
+|-----|---------|
+| [core](file:///f:/Projects/cynaps/cynaps/core) | Settings, middleware, RBAC, permissions, feature flags |
+| [projects](file:///f:/Projects/cynaps/cynaps/projects) | Project creation, label configs, FSM lifecycle |
+| [tasks](file:///f:/Projects/cynaps/cynaps/tasks) | Task, Annotation, Prediction, Draft models |
+| [annotators](file:///f:/Projects/cynaps/cynaps/annotators) | Profiles, assignments, payments, honeypots, trust levels |
+| [billing](file:///f:/Projects/cynaps/cynaps/billing) | Credits, subscriptions, Razorpay, storage billing |
+| [users](file:///f:/Projects/cynaps/cynaps/users) | Authentication, email verification, roles |
+| [organizations](file:///f:/Projects/cynaps/cynaps/organizations) | Multi-tenancy, org members, API keys |
+| [io_storages](file:///f:/Projects/cynaps/cynaps/io_storages) | S3, GCS, Azure Blob, local storage |
+| [data_export](file:///f:/Projects/cynaps/cynaps/data_export) | Export in JSON, CSV, COCO, YOLO, etc. |
+| [data_import](file:///f:/Projects/cynaps/cynaps/data_import) | CSV, JSON, ZIP uploads |
+| [data_manager](file:///f:/Projects/cynaps/cynaps/data_manager) | Data filtering/sorting for frontend |
+| [fsm](file:///f:/Projects/cynaps/cynaps/fsm) | Finite State Machine (UUID7-based) |
+| [jwt_auth](file:///f:/Projects/cynaps/cynaps/jwt_auth) | JWT + API key authentication |
+| [webhooks](file:///f:/Projects/cynaps/cynaps/webhooks) | Event notifications |
+| [labels_manager](file:///f:/Projects/cynaps/cynaps/labels_manager) | Label taxonomy management |
+| [session_policy](file:///f:/Projects/cynaps/cynaps/session_policy) | Session timeout policies |
+| [telemetry](file:///f:/Projects/cynaps/cynaps/telemetry) | Usage analytics |
+| [blogs](file:///f:/Projects/cynaps/cynaps/blogs) | Blog content management |
+
+---
+
+## Frontend Libraries
+
+| Library | Purpose | Dev Command |
+|---------|---------|-------------|
+| **apps/Cynaps** | Main React app | `yarn cynaps:watch` |
+| **libs/editor** | Annotation tools (bbox, polygon, NER, etc.) | `yarn cf:watch` |
+| **libs/datamanager** | Data grid & filtering | `yarn dm:watch` |
+| **libs/ui** | Shadcn/Tailwind design system (5900+ tokens) | `yarn ui:serve` |
+| **libs/app-common** | API clients, auth, shared state | — |
+| **libs/core** | Shared utilities | — |
+
+---
+
+## Key Configuration Files
+
+| File | Purpose |
+|------|---------|
+| [pyproject.toml](file:///f:/Projects/cynaps/pyproject.toml) | Python dependencies + build config |
+| [settings/base.py](file:///f:/Projects/cynaps/cynaps/core/settings/base.py) | Django base settings (1184 lines) |
+| [settings/cynaps.py](file:///f:/Projects/cynaps/cynaps/core/settings/cynaps.py) | Cynaps-specific settings override |
+| [docker-compose.dev.yml](file:///f:/Projects/cynaps/docker-compose.dev.yml) | PostgreSQL, Redis, MinIO |
+| [web/package.json](file:///f:/Projects/cynaps/web/package.json) | Frontend dependencies + npm scripts |
+| [web/webpack.config.js](file:///f:/Projects/cynaps/web/webpack.config.js) | Webpack build configuration |
+
+---
+
+## Setup Instructions (Windows)
+
+### Prerequisites
+
+- **Python 3.10+** with pip
+- **Node.js 18+** with Yarn (`npm install -g yarn`)
+- **Docker Desktop** running
+- **Poetry 2.x** (`pip install poetry`)
+
+### Step 1: Start Infrastructure
+
+```powershell
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+This starts:
+- **PostgreSQL** at `localhost:5432` (user: `cynaps`, pass: `devpassword123`, db: `cynaps`)
+- **Redis** at `localhost:6379` (password: `devredispassword123`)
+- **MinIO** at `localhost:9000` (console: `localhost:9001`, user: `minioadmin`, pass: `minioadmin123`)
+
+### Step 2: Create `.env` File
+
+Create `f:\Projects\cynaps\.env` with the environment variables matching your Docker services:
+
+```env
+# Django
+DEBUG=True
+DJANGO_DB=postgresql
+DJANGO_SETTINGS_MODULE=cynaps.core.settings.cynaps
+
+# PostgreSQL (matches docker-compose.dev.yml)
+POSTGRE_HOST=localhost
+POSTGRE_PORT=5432
+POSTGRE_NAME=cynaps
+POSTGRE_USER=cynaps
+POSTGRE_PASSWORD=devpassword123
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=devredispassword123
+
+# Logging
+LOG_LEVEL=DEBUG
+```
+
+### Step 3: Install Python Dependencies
+
+```powershell
+# Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate
+
+# Install with pip (recommended for dev)
+pip install -e .
+pip install python-dotenv
+```
+
+Or using Poetry:
+```powershell
+poetry install
+poetry shell
+```
+
+### Step 4: Run Database Migrations
+
+```powershell
+python cynaps/manage.py migrate --noinput
+```
+
+### Step 5: Collect Static Files
+
+```powershell
+python cynaps/manage.py collectstatic --noinput
+```
+
+### Step 6: Create a Superuser
+
+```powershell
+python cynaps/manage.py createsuperuser
+```
+
+### Step 7: Start the Backend
+
+```powershell
+python cynaps/manage.py runserver 127.0.0.1:8080
+```
+
+Backend available at **http://localhost:8080**
+
+### Step 8: Start the Frontend (separate terminal)
+
+```powershell
+cd web
+yarn install --frozen-lockfile
+yarn cynaps:watch
+```
+
+> [!NOTE]
+> The frontend builds to `web/dist/apps/cynaps/` and Django serves it automatically. Changes auto-rebuild on save.
+
+---
+
+## Service Credentials Summary
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Cynaps** | http://localhost:8080 | Your superuser |
+| **PostgreSQL** | localhost:5432 | `cynaps` / `devpassword123` |
+| **Redis** | localhost:6379 | password: `devredispassword123` |
+| **MinIO Console** | http://localhost:9001 | `minioadmin` / `minioadmin123` |
+| **MinIO API** | http://localhost:9000 | (bucket: `cynaps-dev`) |
