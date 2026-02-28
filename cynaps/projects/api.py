@@ -1164,6 +1164,7 @@ class GenerateTemplateAPI(generics.RetrieveAPIView):
     """
     API for generating an XML label config via Mistral NPL.
     """
+    parser_classes = (JSONParser,)
     permission_required = all_permissions.projects_change
     queryset = Project.objects.all()
 

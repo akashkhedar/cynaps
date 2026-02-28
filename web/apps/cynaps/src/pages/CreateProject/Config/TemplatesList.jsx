@@ -82,11 +82,16 @@ const TemplatesInGroup = ({ templates, group, onSelectRecipe, isEdition, detecte
   );
 };
 
-export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate, onSelectGroup, onSelectRecipe, detectedFileType }) => {
+export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate, onAIGenerator, onSelectGroup, onSelectRecipe, detectedFileType }) => {
   const [groups, setGroups] = React.useState([]);
   const [templates, setTemplates] = React.useState();
   const api = useAPI();
   const isEdition = window?.APP_SETTINGS?.version_edition;
+
+  // We add this to window so we can access it from the button below, or we could pass it down directly to the button element.
+  React.useEffect(() => {
+    window.onAIGeneratorClicked = onAIGenerator;
+  }, [onAIGenerator]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -156,6 +161,18 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
           aria-label="Create custom template"
         >
           Custom template
+        </Button>
+        <Button
+          type="button"
+          align="left"
+          look="string"
+          size="small"
+          onClick={window.onAIGeneratorClicked}
+          className="w-full"
+          aria-label="AI Template Generator"
+          style={{ marginTop: "8px", background: "linear-gradient(90deg, rgba(139,92,246,0.1), rgba(217,70,239,0.1))", color: "#d946ef", fontWeight: 500 }}
+        >
+          ✨ AI Template Generator
         </Button>
       </aside>
       <main>

@@ -37,6 +37,7 @@ export const API_CONFIG = {
     configTemplates: "/templates",
     validateConfig: "POST:/projects/:pk/validate",
     createSampleTask: "POST:/projects/:pk/sample-task",
+    generateTemplate: "POST:/projects/:pk/generate-template",
     fileUploads: "/projects/:pk/file-uploads",
     deleteFileUploads: "DELETE:/projects/:pk/file-uploads",
     importFiles: "POST:/projects/:pk/import",

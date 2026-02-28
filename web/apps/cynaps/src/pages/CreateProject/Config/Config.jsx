@@ -13,6 +13,7 @@ import "./Config.scss";
 import { Preview } from "./Preview";
 import { DEFAULT_COLUMN, EMPTY_CONFIG, isEmptyConfig, Template } from "./Template";
 import { TemplatesList } from "./TemplatesList";
+import { AIGenerator } from "./AIGenerator";
 
 import tags from "@cynaps/core/lib/utils/schema/tags.json";
 import { UnsavedChanges } from "./UnsavedChanges";
@@ -706,6 +707,11 @@ export const ConfigPage = ({
     __lsa("labeling_setup.view.custom");
   });
 
+  const onAIGenerator = React.useCallback(() => {
+    setMode("ai");
+    __lsa("labeling_setup.view.ai");
+  });
+
   const onBrowse = React.useCallback(() => {
     setMode("list");
     __lsa("labeling_setup.list.browse");
@@ -735,6 +741,7 @@ export const ConfigPage = ({
           onSelectGroup={setSelectedGroup}
           onSelectRecipe={onSelectRecipe}
           onCustomTemplate={onCustomTemplate}
+          onAIGenerator={onAIGenerator}
           detectedFileType={detectedFileType}
         />
       )}
@@ -753,6 +760,16 @@ export const ConfigPage = ({
           onSaveClick={onSaveClick}
           warning={warning}
           hasChanges={hasChanges}
+        />
+      )}
+      {mode === "ai" && (
+        <AIGenerator
+          project={project}
+          setTemplate={(xml) => {
+             setTemplate(xml);
+             setMode("view");
+          }}
+          onCancel={() => setMode("list")}
         />
       )}
     </div>
