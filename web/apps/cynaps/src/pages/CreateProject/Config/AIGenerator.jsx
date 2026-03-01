@@ -6,6 +6,31 @@ import "./Config.scss";
 
 const generatorClass = cn("ai-generator");
 
+const primaryButtonStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "6px",
+  padding: "0 16px",
+  height: "40px",
+  minWidth: "160px",
+  background: "#8b5cf6",
+  border: "1px solid #8b5cf6",
+  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: 600,
+  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+  cursor: "pointer",
+  transition: "all 0.2s ease",
+};
+
+const outlineButtonStyle = {
+  ...primaryButtonStyle,
+  background: "transparent",
+  color: "#8b5cf6",
+  minWidth: "90px",
+};
+
 export const AIGenerator = ({ project, setTemplate, onCancel }) => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,29 +66,16 @@ export const AIGenerator = ({ project, setTemplate, onCancel }) => {
   };
 
   return (
-    <div className={generatorClass} style={{ padding: "40px", maxWidth: "800px", margin: "0 auto", color: "#ececec" }}>
-      <h2 style={{ fontSize: "24px", marginBottom: "16px", fontWeight: "bold", background: "linear-gradient(90deg, #8b5cf6, #d946ef)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-        ✨ AI Template Generator
-      </h2>
-      <p style={{ marginBottom: "24px", opacity: 0.8 }}>
+    <div className={generatorClass} style={{ padding: "0 20px", maxWidth: "800px", margin: "20px auto 0", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+      <h1 className="text-2xl font-semibold mb-2">AI Template Generator</h1>
+      <p className="mb-6 opacity-70 text-sm max-w-2xl">
         Describe the labeling task you want to create in natural language. Our Mistral AI Agent will automatically generate the correct Cynaps XML configuration for you.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="flex flex-col gap-4 w-full max-w-2xl">
         <textarea
-          style={{
-            width: "100%",
-            height: "150px",
-            padding: "16px",
-            background: "rgba(255, 255, 255, 0.05)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "8px",
-            color: "white",
-            fontSize: "16px",
-            resize: "vertical",
-            outline: "none",
-            fontFamily: "inherit"
-          }}
+          className="CF-textarea-ls p-3 text-left"
+          style={{ width: "100%", height: "120px", resize: "vertical" }}
           placeholder="E.g. I want to classify customer reviews into Positive, Negative, or Need Follow-up, and also highlight the specific product mentioned."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -71,40 +83,49 @@ export const AIGenerator = ({ project, setTemplate, onCancel }) => {
         />
 
         {error && (
-          <div style={{ padding: "12px", background: "rgba(2ef, 68, 68, 0.1)", borderLeft: "4px solid #ef4444", color: "#fca5a5" }}>
+          <div className="p-3 bg-red-500/10 border-l-4 border-red-500 text-red-400 text-sm text-left">
             {error}
           </div>
         )}
 
-        <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
-          <Button
+        <div className="flex justify-center gap-3 mt-2">
+          <button
+            type="button"
+            style={primaryButtonStyle}
             onClick={handleGenerate}
             disabled={loading || !prompt.trim()}
-            look="primary"
-            style={{
-              background: "linear-gradient(90deg, #8b5cf6, #d946ef)",
-              border: "none",
-              padding: "10px 24px",
-              height: "auto",
-              fontSize: "15px",
-              fontWeight: 600
-            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(139, 92, 246, 0.9)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#8b5cf6")}
           >
             {loading ? "Generating..." : "Generate Magic Template"}
-          </Button>
-          <Button onClick={onCancel} disabled={loading} style={{ padding: "10px 24px", height: "auto" }}>
+          </button>
+          
+          <button
+            type="button"
+            style={outlineButtonStyle}
+            onClick={onCancel}
+            disabled={loading}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(139, 92, 246, 0.1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
             Cancel
-          </Button>
+          </button>
         </div>
       </div>
       
-      <div style={{ marginTop: "40px" }}>
-        <h4 style={{ opacity: 0.7, marginBottom: "8px" }}>Example Prompts:</h4>
-        <ul style={{ display: "flex", flexDirection: "column", gap: "8px", opacity: 0.8 }}>
-          <li style={{ cursor: "pointer", padding: "8px", background: "rgba(255,255,255,0.03)", borderRadius: "4px" }} onClick={() => setPrompt("Create a template for bounding box detection of cars, pedestrians, and traffic lights in images.")}>
+      <div className="mt-10 w-full max-w-2xl">
+        <h4 className="text-xs font-semibold uppercase tracking-wide opacity-60 mb-4">Example Prompts</h4>
+        <ul className="flex flex-col gap-3">
+          <li 
+            className="cursor-pointer p-4 border border-white/10 rounded-md text-sm opacity-80 hover:bg-white/5 hover:border-white/20 transition-all text-left"
+            onClick={() => setPrompt("Create a template for bounding box detection of cars, pedestrians, and traffic lights in images.")}
+          >
             "Create a template for bounding box detection of cars, pedestrians, and traffic lights in images."
           </li>
-          <li style={{ cursor: "pointer", padding: "8px", background: "rgba(255,255,255,0.03)", borderRadius: "4px" }} onClick={() => setPrompt("I need to transcribe audio files and flag if there is background noise.")}>
+          <li 
+            className="cursor-pointer p-4 border border-white/10 rounded-md text-sm opacity-80 hover:bg-white/5 hover:border-white/20 transition-all text-left"
+            onClick={() => setPrompt("I need to transcribe audio files and flag if there is background noise.")}
+          >
             "I need to transcribe audio files and flag if there is background noise."
           </li>
         </ul>

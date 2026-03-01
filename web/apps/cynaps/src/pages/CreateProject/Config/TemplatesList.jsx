@@ -157,7 +157,7 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
           look="string"
           size="small"
           onClick={onCustomTemplate}
-          className="w-full"
+          className="w-full mt-2"
           aria-label="Create custom template"
         >
           Custom template
@@ -165,12 +165,28 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
         <Button
           type="button"
           align="left"
-          look="string"
+          look="outlined"
           size="small"
           onClick={window.onAIGeneratorClicked}
           className="w-full"
           aria-label="AI Template Generator"
-          style={{ marginTop: "8px", background: "linear-gradient(90deg, rgba(139,92,246,0.1), rgba(217,70,239,0.1))", color: "#d946ef", fontWeight: 500 }}
+          style={{ 
+            marginTop: "7px", 
+            color: "#a78bfa", 
+            borderColor: "rgba(167, 139, 250, 0.3)",
+            background: "transparent",
+            // transition: "all 0.2s ease"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(167, 139, 250, 0.1)";
+            e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.6)";
+            e.currentTarget.style.color = "#c4b5fd";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.3)";
+            e.currentTarget.style.color = "#a78bfa";
+          }}
         >
           ✨ AI Template Generator
         </Button>
@@ -189,16 +205,6 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
           detectedFileType={detectedFileType}
         />
       </main>
-      <footer className="flex items-center justify-center gap-1">
-        <IconInfo className={listClass.elem("info-icon")} width="20" height="20" />
-        <span>
-          See the documentation to{" "}
-          <a href="https://cynaps.io/guide" target="_blank" rel="noreferrer">
-            contribute a template
-          </a>
-          .
-        </span>
-      </footer>
     </div>
   );
 };
